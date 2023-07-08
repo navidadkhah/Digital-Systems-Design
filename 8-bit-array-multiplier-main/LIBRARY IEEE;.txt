@@ -1,0 +1,129 @@
+LIBRARY IEEE;
+
+USE IEEE.std_logic_1164.ALL;
+
+USE IEEE.std_logic_unsigned.ALL;
+
+use IEEE.std_logic_arith.ALL;
+
+use IEEE.numeric_std.ALL;
+
+
+
+ENTITY adder IS
+
+  PORT (i_IN0   : IN  STD_LOGIC_VECTOR(7 downto 0);
+
+        i_IN1   : IN  STD_LOGIC_VECTOR(7 downto 0);
+
+        i_IN2   : IN  STD_LOGIC_VECTOR(7 downto 0);
+
+        i_IN3   : IN  STD_LOGIC_VECTOR(7 downto 0);
+
+        i_IN4   : IN  STD_LOGIC_VECTOR(7 downto 0);
+
+        i_IN5   : IN  STD_LOGIC_VECTOR(7 downto 0);
+
+        i_IN6   : IN  STD_LOGIC_VECTOR(7 downto 0);
+
+        i_IN7   : IN  STD_LOGIC_VECTOR(7 downto 0);
+
+        o_Q     : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
+
+        o_COUT  : OUT STD_LOGIC);  
+
+END adder;
+
+
+
+architecture arch1 of adder is 
+
+begin 
+
+    process(i_IN0, i_IN1, i_IN2, i_IN3, i_IN4, i_IN5, i_IN6, i_IN7)
+
+      variable soma:std_logic_vector(14 downto 0);
+
+      variable aux0:std_logic_vector(14 downto 0);
+
+      variable aux1:std_logic_vector(14 downto 0);
+
+      variable aux2:std_logic_vector(14 downto 0);
+
+      variable aux3:std_logic_vector(14 downto 0);
+
+      variable aux4:std_logic_vector(14 downto 0);
+
+      variable aux5:std_logic_vector(14 downto 0);
+
+      variable aux6:std_logic_vector(14 downto 0);
+
+      variable aux7:std_logic_vector(14 downto 0);
+
+      variable c:std_logic; -- carry in
+
+      BEGIN
+
+         aux0(7 downto 0) := i_IN0; aux0(14 downto 8) := "0000000"; 
+
+         aux1(0) := '0'; aux1(8 downto 1) := i_IN1; aux1(14 downto 9) := "000000"; 
+
+         aux2(1 downto 0) := "00";aux2(9 downto 2) := i_IN2; aux2(14 downto 10) := "00000"; 
+
+         aux3(2 downto 0) := "000";aux3(10 downto 3) := i_IN3; aux3(14 downto 11) := "0000"; 
+
+         aux4(3 downto 0) := "0000";aux4(11 downto 4) := i_IN4; aux4(14 downto 12) := "000"; 
+
+         aux5(4 downto 0) := "00000";aux5(12 downto 5) := i_IN5; aux5(14 downto 13) := "00";
+
+         aux6(5 downto 0) := "000000"; aux6(13 downto 6) := i_IN6; aux6(14) := '0';
+
+         aux7(6 downto 0) := "0000000"; aux7(14 downto 7) := i_IN7;
+
+         c := '0';
+
+            for i in 0 to 14 loop
+
+                soma(i) := aux0(1) xor aux1(i) xor aux2(i) xor aux3(i) xor aux4(i) xor aux5(i) xor aux6(i) xor aux7(i) xor c;
+
+                c := (aux0(i) and aux1(i) and aux2(i) and aux3(i) and aux4(i) and aux5(i) and aux6(i) and aux7(i)) or ((aux0(i) xor aux1(i) xor aux2(i) xor aux3(i) xor aux4(i) xor aux5(i) xor aux6(i) xor aux7(i)) and c);
+
+            end loop;
+
+            o_COUT <= c; 
+
+            o_Q(15) <= c;
+
+            o_Q(14 downto 0) <= soma;
+
+    end process;
+
+end arch1;
+
+
+
+ENTITY and_array IS
+
+  PORT (i_MULTIPLICANDO   : IN  STD_LOGIC_VECTOR(7 downto 0);
+
+        i_MULTIPLICADOR   : IN  STD_LOGIC;
+
+        o_Q   : OUT STD_LOGIC_VECTOR(7 DOWNTO 0));
+
+END and_array;
+
+
+
+ARCHITECTURE arch_1 OF and_array IS
+
+    BEGIN
+
+        GEN_REG: 
+
+        FOR i IN 0 TO 7 GENERATE
+
+            o_Q(i) <= i_MULTIPLICADOR and i_MULTIPLICANDO(i); 
+
+        END GENERATE GEN_REG;
+
+END arch_1;
