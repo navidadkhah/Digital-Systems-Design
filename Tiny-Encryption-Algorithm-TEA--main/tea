@@ -1,0 +1,84 @@
+LIBRARY IEEE;
+USE IEEE.std_logic_1164.ALL;
+USE IEEE.numeric_std.ALL;
+USE IEEE.STD_LOGIC_UNSIGNED.ALL;
+USE IEEE.STD_LOGIC_ARITH.ALL;
+
+entity TEA is port(
+    clk,start: IN STD_LOGIC;
+    key:       IN STD_LOGIC_VECTOR (127 downto 0);
+    plain:     IN STD_LOGIC_VECTOR (63 downto 0);
+    cipher:    OUT STD_LOGIC_VECTOR (63 downto 0);
+    done:      OUT STD_LOGIC
+);
+end TEA;
+
+
+architecture dataflow of TEA is
+    --cache key
+    signal k0 : STD_LOGIC_VECTOR(31 downto 0);
+    signal k1 : STD_LOGIC_VECTOR(63 downto 32);
+    signal k2 : STD_LOGIC_VECTOR(95 downto 64);
+    signal k3 : STD_LOGIC_VECTOR(127 downto 96);
+    --set up
+    signal v0 : STD_LOGIC_VECTOR(31 downto 0);
+    signal v1 : STD_LOGIC_VECTOR(63 downto 32);
+
+    signal t_v0 : STD_LOGIC_VECTOR(31 downto 0);
+    signal t_v1 : STD_LOGIC_VECTOR(63 downto 32);
+    --a key schedule constant
+    --0x9E3779B9 in binary
+    signal delta : STD_LOGIC_VECTOR(31 downto 0) :="10011110001101110111100110111001";
+
+    signal clk_counter:STD_LOGIC_VECTOR(5 downto 0):=(others=>'0');
+
+    signal sum : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
+
+    signal temp_sum : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
+    
+    signal flag : std_logic := '0';
+
+begin
+     seq : PROCESS(clk,start)
+      
+     begin
+        if (rising_edge(clk)) then
+            -- processing the number of cycles
+            if(clk_counter="100000") then 
+            -- we have reached the 32th cycle
+               cipher <= v1 & v0;
+               clk_counter <= (others => '0');
+               done <= '1';
+               flag <= '1';
+            end if;
+          clk_counter <= clk_counter+1;
+       
+           if(start = '0') then
+             clk_counter<="000000";
+             done <='0';
+             flag <='0';
+             v0(31 downto 0)<=plain(31 downto 0);
+             v1(63 downto 32)<=plain(63 downto 32);
+             k0(31 downto 0)<=key(31 downto 0);
+             k1(63 downto 32)<=key(63 downto 32);
+             k2(95 downto 64)<=key(95 downto 64);
+             k3(127 downto 96)<=key(127 downto 96);
+         end if;
+        else
+            temp_sum <= sum+delta;
+            sum <= temp_sum;
+            t_v0(31 downto 0) <= ((v1(59 downto 32)&"0000") + k0(31 downto 0)) xor (v1(63 downto 32) + sum(31 downto 0)) xor (("00000"&v1(63 downto 37)) + k1(63 downto 32));
+            v0 <= t_v0;
+            t_v1(63 downto 32)<= ((v0(27 downto 0)&"0000") + k2(95 downto 64)) xor (v0(31 downto 0) + sum(31 downto 0)) xor (("00000"&v0(31 downto 5)) + k3(127 downto 96));
+            v1 <= t_v1;
+            if (flag='1') then
+                cipher(31 downto 0)<=v0(31 downto 0);
+                cipher(63 downto 32)<=v1(63 downto 32);
+
+            end if;
+        end if;
+    end PROCESS seq;
+
+
+
+end dataflow ; -- dataflow
