@@ -1,0 +1,22 @@
+D:/term5/DSD/elevator/elevator.vhd {1 {vcom -work work -2002 -explicit -stats=none {D:\term5\DSD\elevator\elevator.vhd}
+Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package STD_LOGIC_UNSIGNED
+-- Loading package NUMERIC_STD
+-- Compiling entity elevator
+-- Compiling architecture behavioral of elevator
+
+} {} {}} D:/term5/DSD/elevator/elevator_tb.vhd {1 {vcom -work work -2002 -explicit -stats=none D:/term5/DSD/elevator/elevator_tb.vhd
+Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package STD_LOGIC_UNSIGNED
+-- Compiling entity elevator_tb
+-- Compiling architecture test of elevator_tb
+
+} {} {}}
